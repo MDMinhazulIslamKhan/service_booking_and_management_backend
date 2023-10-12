@@ -1,14 +1,35 @@
-import { Model } from 'mongoose';
-import { Role } from './user.constant';
+import { Model, Types } from 'mongoose';
+import { Department, Role, Status } from './user.constant';
 
 export type IUser = {
-  phoneNumber: string;
+  fullName: string;
   email: string;
-  role: Role;
+  phoneNumber: string;
   password: string;
-  name: {
-    firstName: string;
-    lastName: string;
-  };
+  role: Role;
+  department: Department;
+  notification: Array<{
+    tutorId: Types.ObjectId;
+    userId: Types.ObjectId;
+    status: Status;
+    teachingStartDate: Date;
+    message: {
+      dayPerWeek: number;
+      teachingTime: string;
+      maxSalary: number;
+      location: string;
+      description: string;
+    };
+  }>;
+  history: Array<{ tutorId: Types.ObjectId; teachingStartDate: Date }>;
 };
-export type UserModel = Model<IUser, Record<string, unknown>>;
+
+export type UserModel = {
+  isUserExist(
+    email: string,
+  ): Promise<Pick<IUser, 'email' | 'password' | 'role'>>;
+  isPasswordMatch(
+    givenPassword: string,
+    savePassword: string,
+  ): Promise<boolean>;
+} & Model<IUser>;
