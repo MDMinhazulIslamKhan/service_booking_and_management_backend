@@ -151,15 +151,14 @@ const tutorSchema = new Schema<ITutor>(
             required: true,
           },
         },
-        isSeen: {
-          type: Boolean,
-          required: true,
-          default: false,
-        },
       },
     ],
     history: [
       {
+        userId: {
+          type: Schema.Types.ObjectId,
+          required: true,
+        },
         dayPerWeek: {
           type: Number,
           required: true,
@@ -212,6 +211,11 @@ const tutorSchema = new Schema<ITutor>(
       type: Number,
       required: true,
       default: 5,
+    },
+    unseenNotification: {
+      type: Number,
+      required: true,
+      default: 0,
     },
   },
   {

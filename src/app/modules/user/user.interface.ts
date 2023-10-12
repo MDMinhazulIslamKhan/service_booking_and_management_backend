@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { Department, Role } from './user.constant';
+import { Role } from './user.constant';
 import { Status } from '../../../constant';
 
 export type IUser = {
@@ -9,7 +9,6 @@ export type IUser = {
   phoneNumber: string;
   password: string;
   role: Role;
-  department?: Department;
   notification?: Array<{
     tutorId: Types.ObjectId;
     userId: Types.ObjectId;
@@ -22,8 +21,8 @@ export type IUser = {
       location: string;
       description: string;
     };
-    isSeen: boolean;
   }>;
+  unseenNotification: number;
   history?: Array<{ tutorId: Types.ObjectId; teachingStartDate: Date }>;
 };
 

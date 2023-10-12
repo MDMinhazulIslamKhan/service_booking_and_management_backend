@@ -16,3 +16,10 @@ export type IBooking = {
 };
 
 export type BookingModel = Model<IBooking, Record<string, unknown>>;
+
+export enum StatusOption {
+  Request = 'request',
+  Processing = 'processing',
+  Confirm = 'confirm',
+  Disapproved = 'disapproved',
+}

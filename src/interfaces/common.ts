@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+import { Role } from '../app/modules/user/user.constant';
 import { IGenericErrorMessages } from './error';
 
 export type IGenericErrorResponse = {
@@ -20,4 +22,11 @@ export type IGenericResponse<T> = {
     count: number;
   };
   data: T;
+};
+
+export type UserInfoFromToken = {
+  role: Role;
+  id: Types.ObjectId;
+  iat: number;
+  exp: number;
 };

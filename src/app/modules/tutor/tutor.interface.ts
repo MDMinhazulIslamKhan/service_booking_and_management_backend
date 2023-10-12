@@ -43,9 +43,9 @@ export type ITutor = {
       location: string;
       description: string;
     };
-    isSeen: boolean;
   }>;
   history?: Array<{
+    userId: Types.ObjectId;
     dayPerWeek: number;
     maxSalary: number;
     location: string;
@@ -56,6 +56,7 @@ export type ITutor = {
   totalTuitionTaken: number;
   currentTuition: number;
   maximumTuitionCapacity: number;
+  unseenNotification: number;
 };
 
 export type TutorModel = {

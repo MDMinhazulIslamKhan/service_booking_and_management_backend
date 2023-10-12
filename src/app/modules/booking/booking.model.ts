@@ -18,6 +18,7 @@ const bookingSchema = new Schema<IBooking>(
       type: String,
       required: true,
       enum: statusInfo,
+      default: 'request',
     },
     teachingStartDate: {
       type: Date,

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import { IUser, UserModel } from './user.interface';
-import { adminDepartment, userRoles } from './user.constant';
+import { userRoles } from './user.constant';
 import config from '../../../config';
 import { statusInfo } from '../../../constant';
 
@@ -31,10 +31,6 @@ const userSchema = new Schema<IUser>(
       required: true,
       enum: userRoles,
       default: 'user',
-    },
-    department: {
-      type: String,
-      enum: adminDepartment,
     },
     notification: [
       {
@@ -79,11 +75,6 @@ const userSchema = new Schema<IUser>(
             required: true,
           },
         },
-        isSeen: {
-          type: Boolean,
-          required: true,
-          default: false,
-        },
       },
     ],
     history: [
@@ -99,6 +90,11 @@ const userSchema = new Schema<IUser>(
         },
       },
     ],
+    unseenNotification: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   {
     timestamps: true,
