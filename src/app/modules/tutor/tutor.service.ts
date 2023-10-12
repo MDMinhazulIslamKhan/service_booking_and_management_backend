@@ -1,10 +1,7 @@
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/ApiError';
-import { IUser } from './tutor.interface';
-import Tutor from './tutor.model';
+import { ITutor } from './tutor.interface';
 
-const createUser = async (user: IUser) => {};
+const createTutor = async (tutor: ITutor) => {};
 
 export const TutorService = {
-  createUser,
+  createTutor,
 };

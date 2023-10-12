@@ -14,20 +14,17 @@ export type CurrentStatus = 'available' | 'unavailable';
 
 export const tutorCurrentStatus: CurrentStatus[] = ['available', 'unavailable'];
 
-export type Status = 'request' | 'processing' | 'confirm' | 'disapproved';
-
-export const statusInfo: Status[] = [
-  'request',
-  'processing',
-  'confirm',
-  'disapproved',
-];
 export type PreferredClass =
   | '1-5'
   | '6-8'
   | '9-10'
   | '11-12'
-  | 'honours'
+  | '1-8'
+  | '1-10'
+  | '5-10'
+  | '1-12'
+  | '9-12'
+  | 'Honours'
   | 'IELTS';
 
 export const tutorPreferredClass: PreferredClass[] = [
@@ -35,6 +32,11 @@ export const tutorPreferredClass: PreferredClass[] = [
   '6-8',
   '9-10',
   '11-12',
-  'honours',
+  '1-8',
+  '1-10',
+  '5-10',
+  '1-12',
+  '9-12',
+  'Honours',
   'IELTS',
 ];

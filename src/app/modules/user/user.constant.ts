@@ -9,12 +9,3 @@ export const adminDepartment: Department[] = [
   'manage_user',
   'both',
 ];
-
-export type Status = 'request' | 'processing' | 'confirm' | 'disapproved';
-
-export const statusInfo: Status[] = [
-  'request',
-  'processing',
-  'confirm',
-  'disapproved',
-];

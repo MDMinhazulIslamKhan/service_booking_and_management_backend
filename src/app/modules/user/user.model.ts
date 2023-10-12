@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import { IUser, UserModel } from './user.interface';
-import { adminDepartment, statusInfo, userRoles } from './user.constant';
+import { adminDepartment, userRoles } from './user.constant';
 import config from '../../../config';
+import { statusInfo } from '../../../constant';
 
 const userSchema = new Schema<IUser>(
   {
@@ -76,6 +77,11 @@ const userSchema = new Schema<IUser>(
             type: String,
             required: true,
           },
+        },
+        isSeen: {
+          type: Boolean,
+          required: true,
+          default: false,
         },
       },
     ],

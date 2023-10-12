@@ -3,13 +3,13 @@ import { Schema, model } from 'mongoose';
 import config from '../../../config';
 import { ITutor, TutorModel } from './tutor.interface';
 import {
-  statusInfo,
   tutorCurrentStatus,
   tutorGender,
   tutorGroup,
   tutorMedium,
   tutorPreferredClass,
 } from './tutor.constant';
+import { statusInfo } from '../../../constant';
 
 const tutorSchema = new Schema<ITutor>(
   {
@@ -141,6 +141,11 @@ const tutorSchema = new Schema<ITutor>(
             required: true,
           },
         },
+        isSeen: {
+          type: Boolean,
+          required: true,
+          default: false,
+        },
       },
     ],
     history: [
@@ -193,7 +198,7 @@ const tutorSchema = new Schema<ITutor>(
       required: true,
       default: 0,
     },
-    maximumTuition: {
+    maximumTuitionCapacity: {
       type: Number,
       required: true,
       default: 5,

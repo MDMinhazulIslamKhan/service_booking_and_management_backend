@@ -5,8 +5,8 @@ import {
   Group,
   Medium,
   PreferredClass,
-  Status,
 } from './tutor.constant';
+import { Status } from '../../../constant';
 
 export type ITutor = {
   fullName: string;
@@ -40,6 +40,7 @@ export type ITutor = {
       location: string;
       description: string;
     };
+    isSeen: boolean;
   }>;
   history?: Array<{
     dayPerWeek: number;
@@ -51,7 +52,7 @@ export type ITutor = {
   reviews?: Array<{ name: string; review: string; rating: number }>;
   totalTuitionTaken: number;
   currentTuition: number;
-  maximumTuition: number;
+  maximumTuitionCapacity: number;
 };
 
 export type TutorModel = {
