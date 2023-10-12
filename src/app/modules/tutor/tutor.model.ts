@@ -32,6 +32,14 @@ const tutorSchema = new Schema<ITutor>(
       required: true,
       select: false,
     },
+    imgUrl: {
+      type: String,
+    },
+    role: {
+      type: String,
+      required: true,
+      default: 'tutor',
+    },
     gender: {
       type: String,
       enum: tutorGender,
@@ -71,6 +79,7 @@ const tutorSchema = new Schema<ITutor>(
       type: String,
       enum: tutorCurrentStatus,
       required: true,
+      default: 'available',
     },
     expectedMinSalary: {
       type: Number,
@@ -81,9 +90,10 @@ const tutorSchema = new Schema<ITutor>(
       required: true,
     },
     preferredClass: {
-      type: [String],
+      type: String,
       enum: tutorPreferredClass,
       required: true,
+      default: '1-12',
     },
     preferredArea: {
       type: String,
@@ -211,8 +221,11 @@ const tutorSchema = new Schema<ITutor>(
 
 tutorSchema.statics.isUserExist = async function (
   email: string,
-): Promise<Pick<ITutor, 'email' | 'password'> | null> {
-  return await Tutor.findOne({ email }, { phoneNumber: 1, password: 1 });
+): Promise<Pick<ITutor, 'id' | 'email' | 'password' | 'role'> | null> {
+  return await Tutor.findOne(
+    { email },
+    { phoneNumber: 1, password: 1, role: 1 },
+  );
 };
 
 tutorSchema.statics.isPasswordMatch = async function (

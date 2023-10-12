@@ -9,10 +9,13 @@ import {
 import { Status } from '../../../constant';
 
 export type ITutor = {
+  id: string;
   fullName: string;
   email: string;
   phoneNumber: string;
   password: string;
+  imgUrl: string;
+  role: 'tutor';
   gender: Gender;
   qualification: string;
   institution: string;
@@ -24,7 +27,7 @@ export type ITutor = {
   currentStatus: CurrentStatus;
   expectedMinSalary: number;
   dayPerWeek: number;
-  preferredClass: PreferredClass[];
+  preferredClass: PreferredClass;
   preferredArea: string;
   preferredSubject: string;
   preferredMedium: Medium;
@@ -56,7 +59,9 @@ export type ITutor = {
 };
 
 export type TutorModel = {
-  isUserExist(email: string): Promise<Pick<ITutor, 'email' | 'password'>>;
+  isUserExist(
+    email: string,
+  ): Promise<Pick<ITutor, 'id' | 'email' | 'password' | 'role'>>;
   isPasswordMatch(
     givenPassword: string,
     savePassword: string,

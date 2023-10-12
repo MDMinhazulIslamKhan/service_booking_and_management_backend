@@ -3,6 +3,7 @@ import { Department, Role } from './user.constant';
 import { Status } from '../../../constant';
 
 export type IUser = {
+  id: string;
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -29,9 +30,19 @@ export type IUser = {
 export type UserModel = {
   isUserExist(
     email: string,
-  ): Promise<Pick<IUser, 'email' | 'password' | 'role'>>;
+  ): Promise<Pick<IUser, 'id' | 'email' | 'password' | 'role'>>;
   isPasswordMatch(
     givenPassword: string,
     savePassword: string,
   ): Promise<boolean>;
 } & Model<IUser>;
+
+export type ILoginUserResponse = {
+  accessToken: string;
+  refreshToken?: string;
+};
+
+export type ILoginRequest = {
+  email: string;
+  password: string;
+};

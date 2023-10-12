@@ -1,29 +1,46 @@
 import { z } from 'zod';
-import { adminDepartment, userRoles } from './user.constant';
 import { statusInfo } from '../../../constant';
 
 const createUserZodSchema = z.object({
+  body: z
+    .object({
+      fullName: z.string({
+        required_error: 'fullName is required',
+      }),
+      email: z
+        .string({
+          required_error: 'email is required',
+        })
+        .email({ message: 'Invalid email format' }),
+      phoneNumber: z.string({
+        required_error: 'phoneNumber is required',
+      }),
+      password: z.string({
+        required_error: 'password is required',
+      }),
+    })
+    .strict(),
+});
+
+const loginZodSchema = z.object({
   body: z.object({
-    fullName: z.string({
-      required_error: 'fullName is required',
-    }),
     email: z.string({
-      required_error: 'email is required',
-    }),
-    phoneNumber: z.string({
-      required_error: 'phoneNumber is required',
+      required_error: 'Email is required',
     }),
     password: z.string({
-      required_error: 'password is required',
+      required_error: 'Password is required',
     }),
-    role: z.enum([...userRoles] as [string, ...string[]], {
-      required_error: 'role is required',
-    }),
-    department: z
-      .enum([...adminDepartment] as [string, ...string[]])
-      .optional(),
   }),
 });
+
+const refreshTokenZodSchema = z.object({
+  cookies: z.object({
+    refreshToken: z.string({
+      required_error: 'Refresh Token is required',
+    }),
+  }),
+});
+
 const notificationZodSchema = z.object({
   body: z.object({
     tutorId: z.string({
@@ -60,4 +77,6 @@ const notificationZodSchema = z.object({
 
 export const UserValidation = {
   createUserZodSchema,
+  loginZodSchema,
+  refreshTokenZodSchema,
 };

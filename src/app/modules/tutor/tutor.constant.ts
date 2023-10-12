@@ -2,9 +2,13 @@ export type Gender = 'male' | 'female' | 'others';
 
 export const tutorGender: Gender[] = ['male', 'female', 'others'];
 
-export type Medium = 'bangla' | 'english' | 'both';
+export type Medium = 'bangla' | 'english' | 'bangla english both';
 
-export const tutorMedium: Medium[] = ['bangla', 'english', 'both'];
+export const tutorMedium: Medium[] = [
+  'bangla',
+  'english',
+  'bangla english both',
+];
 
 export type Group = 'science' | 'commerce' | 'arts';
 
