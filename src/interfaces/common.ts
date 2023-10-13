@@ -25,8 +25,8 @@ export type IGenericResponse<T> = {
 };
 
 export type UserInfoFromToken = {
-  role: Role;
-  id: Types.ObjectId;
+  role: Role | 'tutor';
+  id: Types.ObjectId | string;
   iat: number;
   exp: number;
 };

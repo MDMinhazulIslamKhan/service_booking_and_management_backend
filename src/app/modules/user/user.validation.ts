@@ -21,6 +21,32 @@ const createUserZodSchema = z.object({
     .strict(),
 });
 
+const updateUserZodSchema = z.object({
+  body: z
+    .object({
+      fullName: z.string().optional(),
+      email: z.string().email({ message: 'Invalid email format' }).optional(),
+      phoneNumber: z.string().optional(),
+      oldPassword: z.string({
+        required_error: 'password is required',
+      }),
+    })
+    .strict(),
+});
+
+const changePasswordZodSchema = z.object({
+  body: z
+    .object({
+      oldPassword: z.string({
+        required_error: 'Old password is required',
+      }),
+      newPassword: z.string({
+        required_error: 'New password is required',
+      }),
+    })
+    .strict(),
+});
+
 const loginZodSchema = z.object({
   body: z.object({
     email: z.string({
@@ -76,6 +102,8 @@ const refreshTokenZodSchema = z.object({
 
 export const UserValidation = {
   createUserZodSchema,
+  updateUserZodSchema,
   loginZodSchema,
   refreshTokenZodSchema,
+  changePasswordZodSchema,
 };

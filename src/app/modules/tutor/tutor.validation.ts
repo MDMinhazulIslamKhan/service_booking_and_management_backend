@@ -28,7 +28,7 @@ const createTutorZodSchema = z.object({
       }),
       imgUrl: z.string().optional(),
       qualification: z.string({
-        required_error: 'password is required',
+        required_error: 'qualification is required',
       }),
       institution: z.string({
         required_error: 'institution is required',
@@ -37,7 +37,7 @@ const createTutorZodSchema = z.object({
         required_error: 'group is required',
       }),
       subject: z.string({
-        required_error: 'password is required',
+        required_error: 'subject is required',
       }),
       medium: z.enum([...tutorMedium] as [string, ...string[]], {
         required_error: 'medium is required',
@@ -76,6 +76,37 @@ const createTutorZodSchema = z.object({
     .strict(),
 });
 
+const updateTutorZodSchema = z.object({
+  body: z
+    .object({
+      fullName: z.string().optional(),
+      phoneNumber: z.string().optional(),
+      gender: z.enum([...tutorGender] as [string, ...string[]]).optional(),
+      imgUrl: z.string().optional(),
+      qualification: z.string().optional(),
+      institution: z.string().optional(),
+      group: z.enum([...tutorGroup] as [string, ...string[]]).optional(),
+      subject: z.string().optional(),
+      medium: z.enum([...tutorMedium] as [string, ...string[]]).optional(),
+      presentAddress: z.string().optional(),
+      expertIn: z.array(z.string()).optional(),
+      expectedMinSalary: z.number().optional(),
+      dayPerWeek: z.number().optional(),
+      preferredClass: z
+        .enum([...tutorPreferredClass] as [string, ...string[]])
+        .optional(),
+      preferredArea: z.string().optional(),
+      preferredSubject: z.string().optional(),
+      preferredMedium: z
+        .enum([...tutorMedium] as [string, ...string[]])
+        .optional(),
+      currentTuition: z.number().optional(),
+      maximumTuitionCapacity: z.number().optional(),
+    })
+    .strict(),
+});
+
 export const TutorValidation = {
   createTutorZodSchema,
+  updateTutorZodSchema,
 };

@@ -7,18 +7,30 @@ import { ENUM_USER_ROLE } from '../../../enums/user';
 
 const router = express.Router();
 
+// request for booking
 router.post(
   '/',
-  auth(ENUM_USER_ROLE.USER),
+  auth(
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.ADMIN_USER,
+  ),
   validateRequest(BookingValidation.createBookingZodSchema),
   BookingController.bookTutor,
 );
 
-router.delete(
-  '/',
-  auth(ENUM_USER_ROLE.USER),
-  validateRequest(BookingValidation.createBookingZodSchema),
-  BookingController.bookTutor,
+router.get(
+  '/get-my-bookings',
+  auth(
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.ADMIN_USER,
+  ),
+  BookingController.getOwnBookings,
 );
 
 router.get(
@@ -31,12 +43,7 @@ router.get(
   BookingController.getAllBookings,
 );
 
-router.get(
-  '/get-my-bookings',
-  auth(ENUM_USER_ROLE.USER),
-  BookingController.getOwnBookings,
-);
-
+// process booking => send it to tutor
 router.patch(
   '/process/:bookingId',
   auth(
@@ -47,25 +54,30 @@ router.patch(
   BookingController.processBooking,
 );
 
-// router.patch(
-//   '/accept/:bookingId',
-//   auth(
-//     ENUM_USER_ROLE.SUPER_ADMIN,
-//     ENUM_USER_ROLE.ADMIN,
-//     ENUM_USER_ROLE.ADMIN_USER,
-//   ),
-//   BookingController.acceptBookings,
-// );
-
+// cancel own booking
 router.delete(
   '/cancel/:bookingId',
   auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.ADMIN_TUTOR,
     ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.ADMIN_USER,
   ),
   BookingController.cancelBooking,
+);
+
+// confirm own booking
+router.patch(
+  '/confirm/:bookingId',
+  auth(
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.ADMIN_USER,
+  ),
+  BookingController.confirmBooking,
 );
 
 export const BookingRouters = router;

@@ -6,6 +6,7 @@ import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import config from '../../../config';
 import { Secret } from 'jsonwebtoken';
 import Tutor from '../tutor/tutor.model';
+import { UserInfoFromToken } from '../../../interfaces/common';
 
 const createUser = async (user: IUser): Promise<IUser | null> => {
   const checkNumber = await User.findOne({ phoneNumber: user.phoneNumber });
@@ -103,8 +104,19 @@ const refreshToken = async (
   };
 };
 
+const ownProfile = async (
+  userInfo: UserInfoFromToken,
+): Promise<IUser | null> => {
+  const result = await User.findById(userInfo.id);
+  if (!result) {
+    throw new ApiError(httpStatus.CONFLICT, 'Your profile is not exist!!!');
+  }
+  return result;
+};
+
 export const UserService = {
   createUser,
   loginUser,
   refreshToken,
+  ownProfile,
 };

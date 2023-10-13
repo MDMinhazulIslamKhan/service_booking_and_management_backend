@@ -5,6 +5,7 @@ import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
 import config from '../../../config';
 import { ILoginUserResponse } from './user.interface';
+import { UserInfoFromToken } from '../../../interfaces/common';
 
 const createUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -60,8 +61,22 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const ownProfile = catchAsync(async (req: Request, res: Response) => {
+  const userInfo = req?.user;
+
+  const result = await UserService.ownProfile(userInfo as UserInfoFromToken);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Users retrieved Successfully',
+    data: result,
+  });
+});
+
 export const UserController = {
   createUser,
   loginUser,
   refreshToken,
+  ownProfile,
 };

@@ -32,7 +32,7 @@ const getAllBookings: RequestHandler = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       data: result,
-      message: 'Booking retrieved Successfully',
+      message: 'Bookings retrieved Successfully.',
     });
   },
 );
@@ -48,7 +48,7 @@ const getOwnBookings: RequestHandler = catchAsync(
       statusCode: httpStatus.OK,
       success: true,
       data: result,
-      message: 'Booking retrieved Successfully',
+      message: 'Bookings retrieved Successfully.',
     });
   },
 );
@@ -83,10 +83,28 @@ const cancelBooking: RequestHandler = catchAsync(
   },
 );
 
+const confirmBooking: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.bookingId;
+    const userInfo = req.user;
+    const result = await BookingService.confirmBooking(
+      id,
+      userInfo as UserInfoFromToken,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: result,
+    });
+  },
+);
+
 export const BookingController = {
   bookTutor,
   getAllBookings,
   processBooking,
   getOwnBookings,
   cancelBooking,
+  confirmBooking,
 };

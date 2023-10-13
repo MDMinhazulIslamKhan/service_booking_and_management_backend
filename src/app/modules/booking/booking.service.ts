@@ -176,10 +176,92 @@ const cancelBooking = async (
   return 'Booking cancel successfully.';
 };
 
+const confirmBooking = async (
+  id: string,
+  userInfo: UserInfoFromToken,
+): Promise<string> => {
+  const isBooking = await Booking.findOne({
+    $and: [{ _id: id }, { userId: userInfo.id }],
+  }).populate(['tutorId']);
+
+  if (!isBooking) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Booking doesn't exist or this is not your booking.",
+    );
+  }
+
+  if (isBooking.status !== 'accepted') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Booking is already processed.');
+  }
+
+  const user = await User.findById(userInfo.id);
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    const tutorHistory = {
+      userId: userInfo.id,
+      dayPerWeek: isBooking.message.dayPerWeek,
+      maxSalary: isBooking.message.maxSalary,
+      location: isBooking.message.location,
+      description: isBooking.message.description,
+      teachingStartDate: isBooking.teachingStartDate,
+    };
+
+    const userHistory = {
+      tutorId: isBooking.tutorId,
+      teachingStartDate: tutorHistory.teachingStartDate,
+      dayPerWeek: tutorHistory.dayPerWeek,
+      maxSalary: tutorHistory.maxSalary,
+      description: tutorHistory.description,
+    };
+
+    await Tutor.findOneAndUpdate(
+      { _id: isBooking.tutorId },
+      {
+        $pull: { notification: { userId: userInfo.id } },
+        $push: { history: tutorHistory },
+      },
+      {
+        session,
+      },
+    );
+    await Booking.findOneAndDelete(
+      { $and: [{ _id: id }, { userId: userInfo.id }] },
+      {
+        session,
+      },
+    );
+
+    await User.findOneAndUpdate(
+      { _id: userInfo.id },
+      {
+        $push: { history: userHistory },
+        $inc: { unseenNotification: -1 },
+      },
+      {
+        session,
+      },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+
+  return 'Booking confirm successfully.';
+};
+
 export const BookingService = {
   bookTutor,
   getAllBookings,
   processBooking,
   getOwnBookings,
   cancelBooking,
+  confirmBooking,
 };
