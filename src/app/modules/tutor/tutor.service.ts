@@ -183,7 +183,7 @@ const updateProfile = async (
     userInfo.role !== 'admin' &&
     userInfo.role !== 'admin_tutor' &&
     userInfo.role !== 'super_admin' &&
-    id !== userInfo.id
+    id !== userInfo.id.toString()
   ) {
     throw new ApiError(
       httpStatus.UNAUTHORIZED,
