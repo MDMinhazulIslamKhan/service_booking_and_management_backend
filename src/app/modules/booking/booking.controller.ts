@@ -53,10 +53,27 @@ const getOwnBookings: RequestHandler = catchAsync(
   },
 );
 
-const processBookings: RequestHandler = catchAsync(
+const processBooking: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.bookingId;
-    const result = await BookingService.processBookings(id);
+    const result = await BookingService.processBooking(id);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: result,
+    });
+  },
+);
+
+const cancelBooking: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.bookingId;
+    const userInfo = req.user;
+    const result = await BookingService.cancelBooking(
+      id,
+      userInfo as UserInfoFromToken,
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -69,6 +86,7 @@ const processBookings: RequestHandler = catchAsync(
 export const BookingController = {
   bookTutor,
   getAllBookings,
-  processBookings,
+  processBooking,
   getOwnBookings,
+  cancelBooking,
 };

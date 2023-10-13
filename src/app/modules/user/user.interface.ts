@@ -1,6 +1,5 @@
 import { Model, Types } from 'mongoose';
 import { Role } from './user.constant';
-import { Status } from '../../../constant';
 
 export type IUser = {
   id: string;
@@ -9,21 +8,14 @@ export type IUser = {
   phoneNumber: string;
   password: string;
   role: Role;
-  notification?: Array<{
+  history?: Array<{
     tutorId: Types.ObjectId;
-    userId: Types.ObjectId;
-    status: Status;
     teachingStartDate: Date;
-    message: {
-      dayPerWeek: number;
-      teachingTime: string;
-      maxSalary: number;
-      location: string;
-      description: string;
-    };
+    dayPerWeek: number;
+    maxSalary: number;
+    description: string;
   }>;
   unseenNotification: number;
-  history?: Array<{ tutorId: Types.ObjectId; teachingStartDate: Date }>;
 };
 
 export type UserModel = {

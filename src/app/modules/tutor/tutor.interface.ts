@@ -5,8 +5,8 @@ import {
   Group,
   Medium,
   PreferredClass,
+  Status,
 } from './tutor.constant';
-import { Status } from '../../../constant';
 
 export type ITutor = {
   id: string;

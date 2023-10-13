@@ -48,7 +48,7 @@ const getAllBookings = async (): Promise<IBooking[]> => {
   return result;
 };
 
-const processBookings = async (id: string): Promise<string> => {
+const processBooking = async (id: string): Promise<string> => {
   const isBooking = await Booking.findById(id);
   if (!isBooking) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Booking doesn't exist.");
@@ -119,9 +119,67 @@ const getOwnBookings = async (user: UserInfoFromToken): Promise<IBooking[]> => {
   return result;
 };
 
+const cancelBooking = async (
+  id: string,
+  userInfo: UserInfoFromToken,
+): Promise<string> => {
+  const isBooking = await Booking.findOne({
+    $and: [{ _id: id }, { userId: userInfo.id }],
+  });
+
+  if (!isBooking) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Booking doesn't exist or this is not your booking.",
+    );
+  }
+  const session = await mongoose.startSession();
+
+  try {
+    if (isBooking.status === StatusOption.Processing) {
+      await Tutor.findOneAndUpdate(
+        { _id: isBooking.tutorId },
+        {
+          $inc: { unseenNotification: -1 },
+        },
+        {
+          session,
+        },
+      );
+    }
+    session.startTransaction();
+    await Booking.findOneAndDelete(
+      { $and: [{ _id: id }, { userId: userInfo.id }] },
+      {
+        session,
+      },
+    );
+
+    await Tutor.findOneAndUpdate(
+      { _id: isBooking.tutorId },
+      {
+        $pull: { notification: { userId: userInfo.id } },
+      },
+      {
+        session,
+      },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+
+  return 'Booking cancel successfully.';
+};
+
 export const BookingService = {
   bookTutor,
   getAllBookings,
-  processBookings,
+  processBooking,
   getOwnBookings,
+  cancelBooking,
 };

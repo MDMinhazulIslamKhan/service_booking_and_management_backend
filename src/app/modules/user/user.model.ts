@@ -3,7 +3,6 @@ import { Schema, model } from 'mongoose';
 import { IUser, UserModel } from './user.interface';
 import { userRoles } from './user.constant';
 import config from '../../../config';
-import { statusInfo } from '../../../constant';
 
 const userSchema = new Schema<IUser>(
   {
@@ -32,51 +31,6 @@ const userSchema = new Schema<IUser>(
       enum: userRoles,
       default: 'user',
     },
-    notification: [
-      {
-        tutorId: {
-          type: Schema.Types.ObjectId,
-          ref: 'Tutor',
-          required: true,
-        },
-        userId: {
-          type: Schema.Types.ObjectId,
-          ref: 'User',
-          required: true,
-        },
-        status: {
-          type: String,
-          required: true,
-          enum: statusInfo,
-        },
-        teachingStartDate: {
-          type: Date,
-          required: true,
-        },
-        message: {
-          dayPerWeek: {
-            type: Number,
-            required: true,
-          },
-          teachingTime: {
-            type: String,
-            required: true,
-          },
-          maxSalary: {
-            type: Number,
-            required: true,
-          },
-          location: {
-            type: String,
-            required: true,
-          },
-          description: {
-            type: String,
-            required: true,
-          },
-        },
-      },
-    ],
     history: [
       {
         tutorId: {
@@ -86,6 +40,18 @@ const userSchema = new Schema<IUser>(
         },
         teachingStartDate: {
           type: Date,
+          required: true,
+        },
+        dayPerWeek: {
+          type: Number,
+          required: true,
+        },
+        maxSalary: {
+          type: Number,
+          required: true,
+        },
+        description: {
+          type: String,
           required: true,
         },
       },

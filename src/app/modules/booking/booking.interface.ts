@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { Status } from '../../../constant';
+import { Status } from '../tutor/tutor.constant';
 
 export type IBooking = {
   userId: Types.ObjectId;
@@ -20,6 +20,7 @@ export type BookingModel = Model<IBooking, Record<string, unknown>>;
 export enum StatusOption {
   Request = 'request',
   Processing = 'processing',
+  Accepted = 'accepted',
   Confirm = 'confirm',
   Disapproved = 'disapproved',
 }

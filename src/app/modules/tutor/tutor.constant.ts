@@ -44,3 +44,18 @@ export const tutorPreferredClass: PreferredClass[] = [
   'Honours',
   'IELTS',
 ];
+
+export type Status =
+  | 'request'
+  | 'processing'
+  | 'accepted'
+  | 'confirm'
+  | 'disapproved';
+
+export const statusInfo: Status[] = [
+  'request',
+  'processing',
+  'accepted',
+  'disapproved',
+  'confirm',
+];

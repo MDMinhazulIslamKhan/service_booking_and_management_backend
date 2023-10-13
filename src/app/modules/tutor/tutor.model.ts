@@ -3,13 +3,13 @@ import { Schema, model } from 'mongoose';
 import config from '../../../config';
 import { ITutor, TutorModel } from './tutor.interface';
 import {
+  statusInfo,
   tutorCurrentStatus,
   tutorGender,
   tutorGroup,
   tutorMedium,
   tutorPreferredClass,
 } from './tutor.constant';
-import { statusInfo } from '../../../constant';
 
 const tutorSchema = new Schema<ITutor>(
   {

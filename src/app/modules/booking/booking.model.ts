@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { BookingModel, IBooking } from './booking.interface';
-import { statusInfo } from '../../../constant';
+import { statusInfo } from '../tutor/tutor.constant';
 
 const bookingSchema = new Schema<IBooking>(
   {

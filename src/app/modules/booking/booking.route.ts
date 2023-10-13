@@ -44,7 +44,28 @@ router.patch(
     ENUM_USER_ROLE.ADMIN,
     ENUM_USER_ROLE.ADMIN_TUTOR,
   ),
-  BookingController.processBookings,
+  BookingController.processBooking,
+);
+
+// router.patch(
+//   '/accept/:bookingId',
+//   auth(
+//     ENUM_USER_ROLE.SUPER_ADMIN,
+//     ENUM_USER_ROLE.ADMIN,
+//     ENUM_USER_ROLE.ADMIN_USER,
+//   ),
+//   BookingController.acceptBookings,
+// );
+
+router.delete(
+  '/cancel/:bookingId',
+  auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  BookingController.cancelBooking,
 );
 
 export const BookingRouters = router;
