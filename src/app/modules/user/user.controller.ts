@@ -80,7 +80,7 @@ const ownProfile = catchAsync(async (req: Request, res: Response) => {
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableField);
   const paginationOptions = pick(req.query, paginationFields);
-  const result = await UserService.getAllUsers(filters, paginationFields);
+  const result = await UserService.getAllUsers(filters, paginationOptions);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
