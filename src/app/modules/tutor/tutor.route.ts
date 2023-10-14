@@ -36,7 +36,6 @@ router.get('/all-tutors', TutorController.getAllTutorsByUser);
 router.get(
   '/admin',
   auth(
-    ENUM_USER_ROLE.TUTOR, // checking purpose
     ENUM_USER_ROLE.ADMIN,
     ENUM_USER_ROLE.ADMIN_TUTOR,
     ENUM_USER_ROLE.SUPER_ADMIN,

@@ -5,16 +5,22 @@ import {
   ILoginRequest,
   ILoginUserResponse,
 } from '../user/user.interface';
-import { ITutor } from './tutor.interface';
+import { ITutor, ITutorFilters } from './tutor.interface';
 import Tutor from './tutor.model';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import { Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import User from '../user/user.model';
-import { UserInfoFromToken } from '../../../interfaces/common';
+import {
+  IGenericResponse,
+  IPaginationOptions,
+  UserInfoFromToken,
+} from '../../../interfaces/common';
 import Booking from '../booking/booking.model';
-import mongoose from 'mongoose';
+import mongoose, { SortOrder } from 'mongoose';
 import { StatusOption } from '../booking/booking.interface';
+import { tutorFilterableField } from './tutor.constant';
+import { calculatePagination } from '../../../helpers/paginationHelper';
 
 const createTutor = async (tutor: ITutor): Promise<ITutor | null> => {
   const checkNumber = await Tutor.findOne({ phoneNumber: tutor.phoneNumber });
@@ -241,17 +247,79 @@ const getSingleTutor = async (id: string): Promise<ITutor | null> => {
   return result;
 };
 
-const getAllTutorsByUser = async (): Promise<ITutor[]> => {
-  const result = await Tutor.find().select({
-    email: false,
-    phoneNumber: false,
-    role: false,
-    notification: false,
-    unseenNotification: false,
-    history: false,
+const getAllTutorsByUser = async (
+  filters: ITutorFilters,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<ITutor[]>> => {
+  const {
+    searchTerm,
+    lowestExpectedSalary = 0,
+    highestExpectedSalary = Infinity,
+    ...filtersData
+  } = filters;
+
+  const andConditions = [];
+
+  // for filter salary
+  andConditions.push({
+    $and: [
+      { expectedMinSalary: { $gte: lowestExpectedSalary } },
+      { expectedMinSalary: { $lte: highestExpectedSalary } },
+    ],
   });
 
-  return result;
+  // for filter data
+  if (searchTerm) {
+    andConditions.push({
+      $or: tutorFilterableField.map(field => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  // for exact match user and condition
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const { page, limit, skip, sortBy, sortOrder } =
+    calculatePagination(paginationOptions);
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+
+  // if no condition is given
+  const query = andConditions.length > 0 ? { $and: andConditions } : {};
+  const result = await Tutor.find(query)
+    .sort(sortConditions)
+    .skip(skip)
+    .limit(limit)
+    .select({
+      email: false,
+      phoneNumber: false,
+      role: false,
+      notification: false,
+      unseenNotification: false,
+      history: false,
+    });
+
+  const count = await Tutor.countDocuments(query);
+
+  return {
+    meta: {
+      page,
+      limit,
+      count,
+    },
+    data: result,
+  };
 };
 
 const getSingleTutorByUser = async (id: string): Promise<ITutor | null> => {
@@ -269,13 +337,76 @@ const getSingleTutorByUser = async (id: string): Promise<ITutor | null> => {
   return result;
 };
 
-const getAllTutorsByAdmin = async (): Promise<ITutor[]> => {
-  const result = await Tutor.find().select({
-    role: false,
-    unseenNotification: false,
+const getAllTutorsByAdmin = async (
+  filters: ITutorFilters,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<ITutor[]>> => {
+  const {
+    searchTerm,
+    lowestExpectedSalary = 0,
+    highestExpectedSalary = Infinity,
+    ...filtersData
+  } = filters;
+
+  const andConditions = [];
+
+  // for filter salary
+  andConditions.push({
+    $and: [
+      { expectedMinSalary: { $gte: lowestExpectedSalary } },
+      { expectedMinSalary: { $lte: highestExpectedSalary } },
+    ],
   });
 
-  return result;
+  // for filter data
+  if (searchTerm) {
+    andConditions.push({
+      $or: tutorFilterableField.map(field => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  // for exact match user and condition
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const { page, limit, skip, sortBy, sortOrder } =
+    calculatePagination(paginationOptions);
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+
+  // if no condition is given
+  const query = andConditions.length > 0 ? { $and: andConditions } : {};
+
+  const result = await Tutor.find(query)
+    .sort(sortConditions)
+    .skip(skip)
+    .limit(limit)
+    .select({
+      role: false,
+      unseenNotification: false,
+    });
+
+  const count = await Tutor.countDocuments(query);
+
+  return {
+    meta: {
+      page,
+      limit,
+      count,
+    },
+    data: result,
+  };
 };
 
 const getSingleTutorByAdmin = async (id: string): Promise<ITutor | null> => {

@@ -59,3 +59,17 @@ export const statusInfo: Status[] = [
   'disapproved',
   'confirm',
 ];
+
+export const tutorFilterableField = [
+  'searchTerm',
+  'lowestExpectedSalary',
+  'highestExpectedSalary',
+  'fullName',
+  'gender',
+  'medium',
+  'institution',
+  'group',
+  'subject',
+  'expertIn',
+  'currentStatus',
+];

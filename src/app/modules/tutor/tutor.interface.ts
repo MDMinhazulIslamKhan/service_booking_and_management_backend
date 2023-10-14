@@ -68,3 +68,9 @@ export type TutorModel = {
     savePassword: string,
   ): Promise<boolean>;
 } & Model<ITutor>;
+
+export type ITutorFilters = {
+  searchTerm?: string;
+  lowestExpectedSalary?: number;
+  highestExpectedSalary?: number;
+};

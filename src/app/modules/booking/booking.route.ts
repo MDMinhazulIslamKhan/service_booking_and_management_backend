@@ -43,7 +43,7 @@ router.get(
   BookingController.getAllBookings,
 );
 
-// process booking => send it to tutor
+// process booking => send it to tutor from user
 router.patch(
   '/process/:bookingId',
   auth(

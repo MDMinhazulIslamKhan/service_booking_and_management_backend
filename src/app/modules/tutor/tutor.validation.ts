@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import {
+  tutorCurrentStatus,
   tutorGender,
   tutorGroup,
   tutorMedium,
@@ -72,6 +73,9 @@ const createTutorZodSchema = z.object({
       maximumTuitionCapacity: z.number({
         required_error: 'maximumTuitionCapacity is required',
       }),
+      currentStatus: z
+        .enum([...tutorCurrentStatus] as [string, ...string[]])
+        .optional(),
     })
     .strict(),
 });
@@ -102,6 +106,9 @@ const updateTutorZodSchema = z.object({
         .optional(),
       currentTuition: z.number().optional(),
       maximumTuitionCapacity: z.number().optional(),
+      currentStatus: z
+        .enum([...tutorCurrentStatus] as [string, ...string[]])
+        .optional(),
     })
     .strict(),
 });

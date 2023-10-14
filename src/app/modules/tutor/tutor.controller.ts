@@ -6,6 +6,9 @@ import httpStatus from 'http-status';
 import { ILoginUserResponse } from '../user/user.interface';
 import config from '../../../config';
 import { UserInfoFromToken } from '../../../interfaces/common';
+import pick from '../../../shared/pick';
+import { tutorFilterableField } from './tutor.constant';
+import { paginationFields } from '../../../constant';
 
 const createTutor: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -123,7 +126,12 @@ const getSingleTutorByUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllTutorsByUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await TutorService.getAllTutorsByUser();
+  const filters = pick(req.query, tutorFilterableField);
+  const paginationOptions = pick(req.query, paginationFields);
+  const result = await TutorService.getAllTutorsByUser(
+    filters,
+    paginationOptions,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -149,7 +157,12 @@ const getSingleTutorByAdmin = catchAsync(
 );
 
 const getAllTutorsByAdmin = catchAsync(async (req: Request, res: Response) => {
-  const result = await TutorService.getAllTutorsByAdmin();
+  const filters = pick(req.query, tutorFilterableField);
+  const paginationOptions = pick(req.query, paginationFields);
+  const result = await TutorService.getAllTutorsByAdmin(
+    filters,
+    paginationOptions,
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
