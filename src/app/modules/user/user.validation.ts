@@ -25,11 +25,7 @@ const updateUserZodSchema = z.object({
   body: z
     .object({
       fullName: z.string().optional(),
-      email: z.string().email({ message: 'Invalid email format' }).optional(),
       phoneNumber: z.string().optional(),
-      oldPassword: z.string({
-        required_error: 'password is required',
-      }),
     })
     .strict(),
 });

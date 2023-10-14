@@ -1,6 +1,10 @@
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
-import { ILoginRequest, ILoginUserResponse } from '../user/user.interface';
+import {
+  IChangePassword,
+  ILoginRequest,
+  ILoginUserResponse,
+} from '../user/user.interface';
 import { ITutor } from './tutor.interface';
 import Tutor from './tutor.model';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
@@ -141,6 +145,64 @@ const acceptBookingRequest = async (
   return 'Booking accepted successfully.';
 };
 
+const cancelBookingRequest = async (
+  tutor: UserInfoFromToken,
+  userId: string,
+): Promise<string> => {
+  const isBooking = await Booking.findOne({
+    $and: [{ userId: userId }, { tutorId: tutor.id }],
+  });
+  if (!isBooking) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Booking doesn't exist.");
+  }
+
+  if (isBooking.status !== 'processing') {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Booking is in processing.');
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    await Booking.findOneAndUpdate(
+      { _id: isBooking.id },
+      { status: StatusOption.Disapproved },
+      {
+        session,
+      },
+    );
+
+    await Tutor.findOneAndUpdate(
+      { _id: tutor.id },
+      {
+        $inc: { unseenNotification: -1 },
+        $pull: { notification: { userId: userId } },
+      },
+      {
+        session,
+      },
+    );
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        $inc: { unseenNotification: 1 },
+      },
+      {
+        session,
+      },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+  return 'Booking Canceled successfully.';
+};
+
 const ownProfile = async (
   userInfo: UserInfoFromToken,
 ): Promise<ITutor | null> => {
@@ -151,11 +213,45 @@ const ownProfile = async (
   return result;
 };
 
+const changePassword = async (
+  userInfo: UserInfoFromToken,
+  payload: IChangePassword,
+): Promise<void> => {
+  const { oldPassword, newPassword } = payload;
+  // console.log(oldPassword, newPassword);
+  const isUserExist = await Tutor.findById(userInfo.id).select({
+    password: true,
+  });
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Tutor does not exist');
+  }
+
+  if (!(await Tutor.isPasswordMatch(oldPassword, isUserExist.password))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
+  }
+  isUserExist.password = newPassword;
+  isUserExist.save();
+};
+
 const getSingleTutor = async (id: string): Promise<ITutor | null> => {
   const result = await Tutor.findById(id);
   if (!result) {
     throw new ApiError(httpStatus.CONFLICT, 'Tutor is not exist!!!');
   }
+  return result;
+};
+
+const getAllTutorsByUser = async (): Promise<ITutor[]> => {
+  const result = await Tutor.find().select({
+    email: false,
+    phoneNumber: false,
+    role: false,
+    notification: false,
+    unseenNotification: false,
+    history: false,
+  });
+
   return result;
 };
 
@@ -174,11 +270,36 @@ const getSingleTutorByUser = async (id: string): Promise<ITutor | null> => {
   return result;
 };
 
+const getAllTutorsByAdmin = async (): Promise<ITutor[]> => {
+  const result = await Tutor.find().select({
+    role: false,
+    unseenNotification: false,
+  });
+
+  return result;
+};
+
+const getSingleTutorByAdmin = async (id: string): Promise<ITutor | null> => {
+  const result = await Tutor.findById(id).select({
+    role: false,
+    unseenNotification: false,
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.CONFLICT, 'Tutor is not exist!!!');
+  }
+  return result;
+};
+
 const updateProfile = async (
   id: string,
   payload: Partial<ITutor>,
   userInfo: UserInfoFromToken,
 ): Promise<ITutor | null> => {
+  const tutor = await Tutor.findById(id);
+  if (!tutor) {
+    throw new ApiError(httpStatus.CONFLICT, 'Tutor is not exist!!!');
+  }
+
   if (
     userInfo.role !== 'admin' &&
     userInfo.role !== 'admin_tutor' &&
@@ -190,6 +311,7 @@ const updateProfile = async (
       'You can not update this profile!!!',
     );
   }
+
   if (payload.phoneNumber) {
     const checkNumber = await Tutor.findOne({
       phoneNumber: payload.phoneNumber,
@@ -208,12 +330,40 @@ const updateProfile = async (
   return result;
 };
 
+const reviewTutor = async (
+  tutorId: string,
+  review: { name: string; review: string; rating: string },
+  userInfo: UserInfoFromToken,
+): Promise<void> => {
+  const tutor = await Tutor.findById(tutorId);
+  if (!tutor) {
+    throw new ApiError(httpStatus.CONFLICT, 'Tutor is not exist!!!');
+  }
+  const user = await User.findById(userInfo.id);
+  if (!user) {
+    throw new ApiError(httpStatus.CONFLICT, 'User is not exist!!!');
+  }
+  review.name = user.fullName;
+  await Tutor.findOneAndUpdate(
+    { _id: tutorId },
+    {
+      $push: { reviews: review },
+    },
+  );
+};
+
 export const TutorService = {
   createTutor,
   loginTutor,
   getSingleTutor,
   getSingleTutorByUser,
   acceptBookingRequest,
+  cancelBookingRequest,
   ownProfile,
   updateProfile,
+  reviewTutor,
+  getAllTutorsByUser,
+  getAllTutorsByAdmin,
+  getSingleTutorByAdmin,
+  changePassword,
 };

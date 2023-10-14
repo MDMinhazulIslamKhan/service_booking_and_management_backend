@@ -53,6 +53,20 @@ const acceptBookingRequest = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const cancelBookingRequest = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const tutor = req.user;
+  const result = await TutorService.cancelBookingRequest(
+    tutor as UserInfoFromToken,
+    userId,
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: result,
+  });
+});
+
 const ownProfile = catchAsync(async (req: Request, res: Response) => {
   const userInfo = req?.user;
 
@@ -66,6 +80,22 @@ const ownProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const userInfo = req?.user;
+
+  const result = await TutorService.changePassword(
+    userInfo as UserInfoFromToken,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Password changed Successfully.',
+    data: result,
+  });
+});
+
 const getSingleTutor = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
@@ -74,10 +104,11 @@ const getSingleTutor = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User retrieved Successfully.',
+    message: 'Tutor retrieved Successfully.',
     data: result,
   });
 });
+
 const getSingleTutorByUser = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
 
@@ -86,7 +117,44 @@ const getSingleTutorByUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User retrieved Successfully.',
+    message: 'Tutor retrieved Successfully.',
+    data: result,
+  });
+});
+
+const getAllTutorsByUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await TutorService.getAllTutorsByUser();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Tutors retrieved Successfully.',
+    data: result,
+  });
+});
+
+const getSingleTutorByAdmin = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    const result = await TutorService.getSingleTutorByAdmin(id);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Tutor retrieved Successfully.',
+      data: result,
+    });
+  },
+);
+
+const getAllTutorsByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await TutorService.getAllTutorsByAdmin();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Tutors retrieved Successfully.',
     data: result,
   });
 });
@@ -110,12 +178,37 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const reviewTutor = catchAsync(async (req: Request, res: Response) => {
+  const tutorId = req.params.id;
+  const review = req.body;
+  const userInfo = req.user;
+
+  const result = await TutorService.reviewTutor(
+    tutorId,
+    review,
+    userInfo as UserInfoFromToken,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Review post successfully.',
+    data: result,
+  });
+});
+
 export const TutorController = {
   createTutor,
   loginTutor,
   acceptBookingRequest,
   getSingleTutor,
   ownProfile,
+  reviewTutor,
   getSingleTutorByUser,
   updateProfile,
+  getAllTutorsByUser,
+  getSingleTutorByAdmin,
+  getAllTutorsByAdmin,
+  changePassword,
+  cancelBookingRequest,
 };

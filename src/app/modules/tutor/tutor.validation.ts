@@ -106,7 +106,21 @@ const updateTutorZodSchema = z.object({
     .strict(),
 });
 
+const reviewTutorZodSchema = z.object({
+  body: z
+    .object({
+      review: z.string({
+        required_error: 'review is required',
+      }),
+      rating: z.number({
+        required_error: 'rating is required',
+      }),
+    })
+    .strict(),
+});
+
 export const TutorValidation = {
   createTutorZodSchema,
   updateTutorZodSchema,
+  reviewTutorZodSchema,
 };

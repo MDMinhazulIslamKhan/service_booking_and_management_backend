@@ -20,24 +20,51 @@ router.post(
   TutorController.loginTutor,
 );
 
+router.get(
+  '/change-password',
+  auth(ENUM_USER_ROLE.TUTOR),
+  validateRequest(UserValidation.changePasswordZodSchema),
+  TutorController.changePassword,
+);
+
 router.get('/profile', auth(ENUM_USER_ROLE.TUTOR), TutorController.ownProfile);
 
-router.get('/user/:id', TutorController.getSingleTutorByUser);
+router.get('/single-tutor/:id', TutorController.getSingleTutorByUser);
+
+router.get('/all-tutors', TutorController.getAllTutorsByUser);
+
+router.get(
+  '/admin',
+  auth(
+    ENUM_USER_ROLE.TUTOR, // checking purpose
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+  ),
+  TutorController.getAllTutorsByAdmin,
+);
 
 router.get(
   '/admin/:id',
   auth(
+    ENUM_USER_ROLE.TUTOR, // checking purpose
     ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.ADMIN_USER,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
     ENUM_USER_ROLE.SUPER_ADMIN,
   ),
-  TutorController.getSingleTutor,
+  TutorController.getSingleTutorByAdmin,
 );
 
 router.patch(
   '/accept-request/:userId',
   auth(ENUM_USER_ROLE.TUTOR),
   TutorController.acceptBookingRequest,
+);
+
+router.delete(
+  '/cancel-request/:userId',
+  auth(ENUM_USER_ROLE.TUTOR),
+  TutorController.cancelBookingRequest,
 );
 
 router.patch(
@@ -50,6 +77,19 @@ router.patch(
     ENUM_USER_ROLE.ADMIN_TUTOR,
   ),
   TutorController.updateProfile,
+);
+
+router.patch(
+  '/review/:id',
+  validateRequest(TutorValidation.reviewTutorZodSchema),
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.ADMIN_USER,
+    ENUM_USER_ROLE.USER,
+  ),
+  TutorController.reviewTutor,
 );
 
 export const TutorRouters = router;

@@ -3,22 +3,27 @@ import { FeedbackService } from './feedback.service';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
+import { UserInfoFromToken } from '../../../interfaces/common';
 
-const createUser: RequestHandler = catchAsync(
+const createFeedback: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
-    const user = req.body;
+    const feedback = req.body;
+    const userInfo = req.user;
 
-    const result = await FeedbackService.createUser(user);
+    const result = await FeedbackService.createFeedback(
+      feedback,
+      userInfo as UserInfoFromToken,
+    );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       data: result,
-      message: 'User create Successfully',
+      message: 'Feedback post successfully.',
     });
   },
 );
 
 export const FeedbackController = {
-  createUser,
+  createFeedback,
 };

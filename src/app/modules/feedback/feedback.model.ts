@@ -3,9 +3,13 @@ import { FeedbackModel, IFeedback } from './feedback.interface';
 
 const feedbackSchema = new Schema<IFeedback>(
   {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+    name: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ['Tutor', 'Public'],
       required: true,
     },
     feedback: {

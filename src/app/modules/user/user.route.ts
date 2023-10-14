@@ -38,4 +38,40 @@ router.get(
   UserController.ownProfile,
 );
 
+// router.get(
+//   '/getAllUsers',
+//   auth(
+//     ENUM_USER_ROLE.ADMIN,
+//     ENUM_USER_ROLE.ADMIN_USER,
+//     ENUM_USER_ROLE.SUPER_ADMIN,
+//   ),
+//   UserController.getAllUsers,
+// );
+
+// router.get(
+//   '/singleUser/:id',
+//   auth(
+//     ENUM_USER_ROLE.USER,
+//     ENUM_USER_ROLE.ADMIN,
+//     ENUM_USER_ROLE.ADMIN_TUTOR,
+//     ENUM_USER_ROLE.ADMIN_USER,
+//     ENUM_USER_ROLE.SUPER_ADMIN,
+//     ENUM_USER_ROLE.TUTOR,
+//   ),
+//   UserController.singleUser,
+// );
+
+// router.patch(
+//   '/profile/:id',
+//   validateRequest(UserValidation.updateUserZodSchema),
+//   auth(
+//     ENUM_USER_ROLE.USER,
+//     ENUM_USER_ROLE.ADMIN,
+//     ENUM_USER_ROLE.ADMIN_TUTOR,
+//     ENUM_USER_ROLE.ADMIN_USER,
+//     ENUM_USER_ROLE.SUPER_ADMIN,
+//   ),
+//   UserController.updateProfile,
+// );
+
 export const UserRouters = router;

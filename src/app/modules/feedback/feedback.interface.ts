@@ -1,7 +1,8 @@
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 
 export type IFeedback = {
-  userId: Types.ObjectId;
+  name: string;
+  role: 'Tutor' | 'Public';
   feedback: string;
 };
 
