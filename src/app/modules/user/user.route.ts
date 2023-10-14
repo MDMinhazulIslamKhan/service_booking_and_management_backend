@@ -39,9 +39,10 @@ router.get(
 );
 
 router.get(
-  '/getAllUsers',
+  '/get-all-users',
   auth(
     ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.USER,
     ENUM_USER_ROLE.ADMIN_USER,
     ENUM_USER_ROLE.SUPER_ADMIN,
   ),
@@ -49,7 +50,7 @@ router.get(
 );
 
 router.get(
-  '/singleUser/:id',
+  '/single-user/:id',
   auth(
     ENUM_USER_ROLE.USER,
     ENUM_USER_ROLE.ADMIN,

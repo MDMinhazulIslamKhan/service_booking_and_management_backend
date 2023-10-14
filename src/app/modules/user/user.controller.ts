@@ -6,6 +6,9 @@ import httpStatus from 'http-status';
 import config from '../../../config';
 import { ILoginUserResponse } from './user.interface';
 import { UserInfoFromToken } from '../../../interfaces/common';
+import pick from '../../../shared/pick';
+import { userFilterableField } from './user.constant';
+import { paginationFields } from '../../../constant';
 
 const createUser: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -75,7 +78,9 @@ const ownProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserService.getAllUsers();
+  const filters = pick(req.query, userFilterableField);
+  const paginationOptions = pick(req.query, paginationFields);
+  const result = await UserService.getAllUsers(filters, paginationFields);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -12,3 +12,10 @@ export const userRoles: Role[] = [
   'admin_tutor',
   'admin_user',
 ];
+
+export const userFilterableField = [
+  'searchTerm',
+  'fullName',
+  'role',
+  'phoneNumber',
+];

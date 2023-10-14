@@ -11,7 +11,14 @@ import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import config from '../../../config';
 import { Secret } from 'jsonwebtoken';
 import Tutor from '../tutor/tutor.model';
-import { UserInfoFromToken } from '../../../interfaces/common';
+import {
+  IGenericResponse,
+  IPaginationOptions,
+  UserInfoFromToken,
+} from '../../../interfaces/common';
+import { userFilterableField } from './user.constant';
+import { calculatePagination } from '../../../helpers/paginationHelper';
+import { SortOrder } from 'mongoose';
 
 const createUser = async (user: IUser): Promise<IUser | null> => {
   const checkNumber = await User.findOne({ phoneNumber: user.phoneNumber });
@@ -118,10 +125,69 @@ const ownProfile = async (
   }
   return result;
 };
+export type IUserFilters = {
+  searchTerm?: string;
+  lowestExpectedSalary?: number;
+  highestExpectedSalary?: number;
+};
 
-const getAllUsers = async (): Promise<IUser[]> => {
-  const result = await User.find();
-  return result;
+const getAllUsers = async (
+  filters: IUserFilters,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<IUser[]>> => {
+  const { searchTerm, ...filtersData } = filters;
+
+  const andConditions = [];
+
+  // for filter data
+  if (searchTerm) {
+    andConditions.push({
+      $or: userFilterableField.map(field => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  // for exact match user and condition
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const { page, limit, skip, sortBy, sortOrder } =
+    calculatePagination(paginationOptions);
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+
+  // if no condition is given
+  const query = andConditions.length > 0 ? { $and: andConditions } : {};
+
+  const result = await User.find(query)
+    .sort(sortConditions)
+    .skip(skip)
+    .limit(limit)
+    .select({
+      role: false,
+      unseenNotification: false,
+    });
+
+  const count = await User.countDocuments(query);
+
+  return {
+    meta: {
+      page,
+      limit,
+      count,
+    },
+    data: result,
+  };
 };
 
 const getSingleUser = async (id: string): Promise<IUser | null> => {
