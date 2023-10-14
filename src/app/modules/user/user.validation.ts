@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { userRoles } from './user.constant';
 
 const createUserZodSchema = z.object({
   body: z
@@ -62,39 +63,15 @@ const refreshTokenZodSchema = z.object({
   }),
 });
 
-// const notificationZodSchema = z.object({
-//   body: z.object({
-//     tutorId: z.string({
-//       required_error: 'tutorId is required',
-//     }),
-//     userId: z.string({
-//       required_error: 'userId is required',
-//     }),
-//     status: z.enum([...statusInfo] as [string, ...string[]], {
-//       required_error: 'status is required',
-//     }),
-//     teachingStartDate: z.string({
-//       required_error: 'userId is required',
-//     }),
-//     message: z.object({
-//       dayPerWeek: z.number({
-//         required_error: 'dayPerWeek is required',
-//       }),
-//       teachingTime: z.string({
-//         required_error: 'teachingTime is required',
-//       }),
-//       maxSalary: z.number({
-//         required_error: 'maxSalary is required',
-//       }),
-//       location: z.string({
-//         required_error: 'location is required',
-//       }),
-//       description: z.string({
-//         required_error: 'description is required',
-//       }),
-//     }),
-//   }),
-// });
+const changeRoleZodSchema = z.object({
+  body: z
+    .object({
+      role: z.enum([...userRoles] as [string, ...string[]], {
+        required_error: 'role is required',
+      }),
+    })
+    .strict(),
+});
 
 export const UserValidation = {
   createUserZodSchema,
@@ -102,4 +79,5 @@ export const UserValidation = {
   loginZodSchema,
   refreshTokenZodSchema,
   changePasswordZodSchema,
+  changeRoleZodSchema,
 };

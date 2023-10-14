@@ -218,7 +218,6 @@ const changePassword = async (
   payload: IChangePassword,
 ): Promise<void> => {
   const { oldPassword, newPassword } = payload;
-  // console.log(oldPassword, newPassword);
   const isUserExist = await Tutor.findById(userInfo.id).select({
     password: true,
   });

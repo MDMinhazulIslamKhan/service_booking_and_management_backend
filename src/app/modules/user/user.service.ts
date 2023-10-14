@@ -1,6 +1,11 @@
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
-import { ILoginRequest, ILoginUserResponse, IUser } from './user.interface';
+import {
+  IChangePassword,
+  ILoginRequest,
+  ILoginUserResponse,
+  IUser,
+} from './user.interface';
 import User from './user.model';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import config from '../../../config';
@@ -114,9 +119,105 @@ const ownProfile = async (
   return result;
 };
 
+const getAllUsers = async (): Promise<IUser[]> => {
+  const result = await User.find();
+  return result;
+};
+
+const getSingleUser = async (id: string): Promise<IUser | null> => {
+  const result = await User.findById(id);
+  return result;
+};
+
+const updateUser = async (
+  payload: Partial<IUser>,
+  userInfo: UserInfoFromToken,
+): Promise<IUser | null> => {
+  const isUserExist = await User.findById(userInfo.id);
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+  if (payload.phoneNumber) {
+    const checkNumber = await User.findOne({
+      phoneNumber: payload.phoneNumber,
+    });
+    if (checkNumber) {
+      throw new ApiError(httpStatus.CONFLICT, 'Already used this number!!!');
+    }
+  }
+  const result = await User.findOneAndUpdate({ _id: userInfo.id }, payload, {
+    new: true,
+  });
+  return result;
+};
+
+const updateUserByAdmin = async (
+  payload: Partial<IUser>,
+  id: string,
+): Promise<IUser | null> => {
+  const isUserExist = await User.findById(id);
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+  if (payload.phoneNumber) {
+    const checkNumber = await User.findOne({
+      phoneNumber: payload.phoneNumber,
+    });
+    if (checkNumber) {
+      throw new ApiError(httpStatus.CONFLICT, 'Already used this number!!!');
+    }
+  }
+  const result = await User.findOneAndUpdate({ _id: id }, payload, {
+    new: true,
+  });
+  return result;
+};
+
+const changeRole = async (
+  payload: Partial<IUser>,
+  id: string,
+): Promise<IUser | null> => {
+  const isUserExist = await User.findById(id);
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+  const result = await User.findOneAndUpdate({ _id: id }, payload, {
+    new: true,
+  });
+  return result;
+};
+
+const changePassword = async (
+  userInfo: UserInfoFromToken,
+  payload: IChangePassword,
+): Promise<void> => {
+  const { oldPassword, newPassword } = payload;
+  const isUserExist = await User.findById(userInfo.id).select({
+    password: true,
+  });
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
+  }
+
+  if (!(await User.isPasswordMatch(oldPassword, isUserExist.password))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old Password is incorrect');
+  }
+  isUserExist.password = newPassword;
+  isUserExist.save();
+};
 export const UserService = {
   createUser,
   loginUser,
   refreshToken,
   ownProfile,
+  getAllUsers,
+  getSingleUser,
+  updateUser,
+  updateUserByAdmin,
+  changeRole,
+  changePassword,
 };
