@@ -1,10 +1,16 @@
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
-import { UserInfoFromToken } from '../../../interfaces/common';
+import {
+  IGenericResponse,
+  IPaginationOptions,
+  UserInfoFromToken,
+} from '../../../interfaces/common';
 import User from '../user/user.model';
 import { IFeedback } from './feedback.interface';
 import Feedback from './feedback.model';
 import Tutor from '../tutor/tutor.model';
+import { calculatePagination } from '../../../helpers/paginationHelper';
+import { SortOrder } from 'mongoose';
 
 const createFeedback = async (
   feedback: Partial<IFeedback>,
@@ -30,6 +36,30 @@ const createFeedback = async (
   return result;
 };
 
+const getAllFeedback = async (
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<IFeedback[]>> => {
+  const { page, limit, skip, sortBy, sortOrder } =
+    calculatePagination(paginationOptions);
+  const sortConditions: { [key: string]: SortOrder } = {};
+
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+  const result = await Feedback.find().sort(sortConditions);
+  const count = await Feedback.countDocuments();
+
+  return {
+    meta: {
+      page,
+      limit,
+      count,
+    },
+    data: result,
+  };
+};
+
 export const FeedbackService = {
   createFeedback,
+  getAllFeedback,
 };

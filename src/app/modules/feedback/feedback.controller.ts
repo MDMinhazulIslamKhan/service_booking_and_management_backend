@@ -4,6 +4,8 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
 import { UserInfoFromToken } from '../../../interfaces/common';
+import pick from '../../../shared/pick';
+import { paginationFields } from '../../../constant';
 
 const createFeedback: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
@@ -24,6 +26,21 @@ const createFeedback: RequestHandler = catchAsync(
   },
 );
 
+const getAllFeedback: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const paginationOptions = pick(req.query, paginationFields);
+    const result = await FeedbackService.getAllFeedback(paginationOptions);
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      data: result,
+      message: 'Feedback fetched successfully.',
+    });
+  },
+);
+
 export const FeedbackController = {
   createFeedback,
+  getAllFeedback,
 };
