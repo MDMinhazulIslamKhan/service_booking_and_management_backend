@@ -174,7 +174,6 @@ const getAllUsers = async (
     .skip(skip)
     .limit(limit)
     .select({
-      role: false,
       unseenNotification: false,
     });
 

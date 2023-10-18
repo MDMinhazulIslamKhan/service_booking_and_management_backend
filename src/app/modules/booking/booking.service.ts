@@ -48,6 +48,11 @@ const getAllBookings = async (): Promise<IBooking[]> => {
   return result;
 };
 
+const getAllRequestedBookings = async (): Promise<IBooking[]> => {
+  const result = await Booking.find({ status: StatusOption.Request });
+  return result;
+};
+
 const processBooking = async (id: string): Promise<string> => {
   const isBooking = await Booking.findById(id);
   if (!isBooking) {
@@ -117,6 +122,26 @@ const getOwnBookings = async (user: UserInfoFromToken): Promise<IBooking[]> => {
     })
     .select({ userId: false });
   return result;
+};
+
+const cancelBookingByAdmin = async (id: string): Promise<string> => {
+  const isBooking = await Booking.findOne({ _id: id });
+
+  if (!isBooking) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Booking doesn't exist.");
+  }
+  if (isBooking.status !== StatusOption.Request) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Can not cancel booking in '${isBooking.status}' stage.`,
+    );
+  }
+
+  await Booking.findOneAndUpdate(
+    { _id: id },
+    { status: StatusOption.Disapproved },
+  );
+  return 'Booking cancel successfully.';
 };
 
 const cancelBooking = async (
@@ -264,4 +289,6 @@ export const BookingService = {
   getOwnBookings,
   cancelBooking,
   confirmBooking,
+  cancelBookingByAdmin,
+  getAllRequestedBookings,
 };

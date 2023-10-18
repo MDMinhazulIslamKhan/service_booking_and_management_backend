@@ -43,6 +43,7 @@ router.get(
     ENUM_USER_ROLE.ADMIN,
     ENUM_USER_ROLE.ADMIN_USER,
     ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
   ),
   UserController.getAllUsers,
 );

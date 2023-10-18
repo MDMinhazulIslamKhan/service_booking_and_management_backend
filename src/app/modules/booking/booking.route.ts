@@ -39,8 +39,19 @@ router.get(
     ENUM_USER_ROLE.SUPER_ADMIN,
     ENUM_USER_ROLE.ADMIN,
     ENUM_USER_ROLE.ADMIN_TUTOR,
+    ENUM_USER_ROLE.ADMIN_USER,
   ),
   BookingController.getAllBookings,
+);
+
+router.get(
+  '/requested-booking',
+  auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+  ),
+  BookingController.getAllRequestedBookings,
 );
 
 // process booking => send it to tutor from user
@@ -52,6 +63,17 @@ router.patch(
     ENUM_USER_ROLE.ADMIN_TUTOR,
   ),
   BookingController.processBooking,
+);
+
+// cancel booking by admin
+router.delete(
+  '/cancel-by-admin/:bookingId',
+  auth(
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN_TUTOR,
+  ),
+  BookingController.cancelBookingByAdmin,
 );
 
 // cancel own booking
