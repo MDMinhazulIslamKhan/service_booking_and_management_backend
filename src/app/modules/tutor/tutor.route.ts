@@ -20,7 +20,7 @@ router.post(
   TutorController.loginTutor,
 );
 
-router.get(
+router.patch(
   '/change-password',
   auth(ENUM_USER_ROLE.TUTOR),
   validateRequest(UserValidation.changePasswordZodSchema),

@@ -27,7 +27,6 @@ router.post(
 
 router.get(
   '/profile',
-  validateRequest(UserValidation.loginZodSchema),
   auth(
     ENUM_USER_ROLE.USER,
     ENUM_USER_ROLE.ADMIN,
@@ -42,7 +41,6 @@ router.get(
   '/get-all-users',
   auth(
     ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.USER,
     ENUM_USER_ROLE.ADMIN_USER,
     ENUM_USER_ROLE.SUPER_ADMIN,
   ),
@@ -93,7 +91,7 @@ router.patch(
   UserController.changeRole,
 );
 
-router.get(
+router.patch(
   '/change-password',
   auth(
     ENUM_USER_ROLE.USER,

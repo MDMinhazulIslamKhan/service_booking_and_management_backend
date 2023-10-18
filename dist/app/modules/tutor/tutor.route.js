@@ -14,7 +14,7 @@ const user_1 = require("../../../enums/user");
 const router = express_1.default.Router();
 router.post('/signup', (0, validateRequest_1.default)(tutor_validation_1.TutorValidation.createTutorZodSchema), tutor_controller_1.TutorController.createTutor);
 router.post('/login', (0, validateRequest_1.default)(user_validation_1.UserValidation.loginZodSchema), tutor_controller_1.TutorController.loginTutor);
-router.get('/change-password', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR), (0, validateRequest_1.default)(user_validation_1.UserValidation.changePasswordZodSchema), tutor_controller_1.TutorController.changePassword);
+router.patch('/change-password', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR), (0, validateRequest_1.default)(user_validation_1.UserValidation.changePasswordZodSchema), tutor_controller_1.TutorController.changePassword);
 router.get('/profile', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR), tutor_controller_1.TutorController.ownProfile);
 router.get('/single-tutor/:id', tutor_controller_1.TutorController.getSingleTutorByUser);
 router.get('/all-tutors', tutor_controller_1.TutorController.getAllTutorsByUser);
