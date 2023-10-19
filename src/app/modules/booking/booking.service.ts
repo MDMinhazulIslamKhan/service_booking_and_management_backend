@@ -49,7 +49,10 @@ const getAllBookings = async (): Promise<IBooking[]> => {
 };
 
 const getAllRequestedBookings = async (): Promise<IBooking[]> => {
-  const result = await Booking.find({ status: StatusOption.Request });
+  const result = await Booking.find({ status: StatusOption.Request }).populate([
+    'userId',
+    'tutorId',
+  ]);
   return result;
 };
 
@@ -118,6 +121,7 @@ const getOwnBookings = async (user: UserInfoFromToken): Promise<IBooking[]> => {
         qualification: true,
         expectedMinSalary: true,
         reviews: true,
+        phoneNumber: true,
       },
     })
     .select({ userId: false });
@@ -161,6 +165,7 @@ const cancelBooking = async (
   const session = await mongoose.startSession();
 
   try {
+    session.startTransaction();
     if (isBooking.status === StatusOption.Processing) {
       await Tutor.findOneAndUpdate(
         { _id: isBooking.tutorId },
@@ -172,7 +177,17 @@ const cancelBooking = async (
         },
       );
     }
-    session.startTransaction();
+    if (isBooking.status === StatusOption.Accepted) {
+      await User.findOneAndUpdate(
+        { _id: userInfo.id },
+        {
+          $inc: { unseenNotification: -1 },
+        },
+        {
+          session,
+        },
+      );
+    }
     await Booking.findOneAndDelete(
       { $and: [{ _id: id }, { userId: userInfo.id }] },
       {
@@ -220,8 +235,6 @@ const confirmBooking = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'Booking is already processed.');
   }
 
-  const user = await User.findById(userInfo.id);
-
   const session = await mongoose.startSession();
 
   try {
@@ -248,6 +261,7 @@ const confirmBooking = async (
       {
         $pull: { notification: { userId: userInfo.id } },
         $push: { history: tutorHistory },
+        $inc: { totalTuitionTaken: 1 },
       },
       {
         session,

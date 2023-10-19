@@ -43,6 +43,13 @@ const getAllBookings = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield booking_model_1.default.find().populate(['userId', 'tutorId']);
     return result;
 });
+const getAllRequestedBookings = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_model_1.default.find({ status: booking_interface_1.StatusOption.Request }).populate([
+        'userId',
+        'tutorId',
+    ]);
+    return result;
+});
 const processBooking = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const isBooking = yield booking_model_1.default.findById(id);
     if (!isBooking) {
@@ -97,10 +104,22 @@ const getOwnBookings = (user) => __awaiter(void 0, void 0, void 0, function* () 
             qualification: true,
             expectedMinSalary: true,
             reviews: true,
+            phoneNumber: true,
         },
     })
         .select({ userId: false });
     return result;
+});
+const cancelBookingByAdmin = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const isBooking = yield booking_model_1.default.findOne({ _id: id });
+    if (!isBooking) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Booking doesn't exist.");
+    }
+    if (isBooking.status !== booking_interface_1.StatusOption.Request) {
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, `Can not cancel booking in '${isBooking.status}' stage.`);
+    }
+    yield booking_model_1.default.findOneAndUpdate({ _id: id }, { status: booking_interface_1.StatusOption.Disapproved });
+    return 'Booking cancel successfully.';
 });
 const cancelBooking = (id, userInfo) => __awaiter(void 0, void 0, void 0, function* () {
     const isBooking = yield booking_model_1.default.findOne({
@@ -111,6 +130,7 @@ const cancelBooking = (id, userInfo) => __awaiter(void 0, void 0, void 0, functi
     }
     const session = yield mongoose_1.default.startSession();
     try {
+        session.startTransaction();
         if (isBooking.status === booking_interface_1.StatusOption.Processing) {
             yield tutor_model_1.default.findOneAndUpdate({ _id: isBooking.tutorId }, {
                 $inc: { unseenNotification: -1 },
@@ -118,7 +138,13 @@ const cancelBooking = (id, userInfo) => __awaiter(void 0, void 0, void 0, functi
                 session,
             });
         }
-        session.startTransaction();
+        if (isBooking.status === booking_interface_1.StatusOption.Accepted) {
+            yield user_model_1.default.findOneAndUpdate({ _id: userInfo.id }, {
+                $inc: { unseenNotification: -1 },
+            }, {
+                session,
+            });
+        }
         yield booking_model_1.default.findOneAndDelete({ $and: [{ _id: id }, { userId: userInfo.id }] }, {
             session,
         });
@@ -147,7 +173,6 @@ const confirmBooking = (id, userInfo) => __awaiter(void 0, void 0, void 0, funct
     if (isBooking.status !== 'accepted') {
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Booking is already processed.');
     }
-    const user = yield user_model_1.default.findById(userInfo.id);
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
@@ -169,6 +194,7 @@ const confirmBooking = (id, userInfo) => __awaiter(void 0, void 0, void 0, funct
         yield tutor_model_1.default.findOneAndUpdate({ _id: isBooking.tutorId }, {
             $pull: { notification: { userId: userInfo.id } },
             $push: { history: tutorHistory },
+            $inc: { totalTuitionTaken: 1 },
         }, {
             session,
         });
@@ -198,4 +224,6 @@ exports.BookingService = {
     getOwnBookings,
     cancelBooking,
     confirmBooking,
+    cancelBookingByAdmin,
+    getAllRequestedBookings,
 };

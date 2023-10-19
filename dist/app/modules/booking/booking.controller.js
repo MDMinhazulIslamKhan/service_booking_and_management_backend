@@ -37,6 +37,15 @@ const getAllBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         message: 'Bookings retrieved Successfully.',
     });
 }));
+const getAllRequestedBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield booking_service_1.BookingService.getAllRequestedBookings();
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        data: result,
+        message: 'All Requested Bookings retrieved Successfully.',
+    });
+}));
 const getOwnBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const result = yield booking_service_1.BookingService.getOwnBookings(user);
@@ -50,6 +59,15 @@ const getOwnBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 const processBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.bookingId;
     const result = yield booking_service_1.BookingService.processBooking(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: result,
+    });
+}));
+const cancelBookingByAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.bookingId;
+    const result = yield booking_service_1.BookingService.cancelBookingByAdmin(id);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -80,7 +98,9 @@ exports.BookingController = {
     bookTutor,
     getAllBookings,
     processBooking,
+    cancelBookingByAdmin,
     getOwnBookings,
     cancelBooking,
     confirmBooking,
+    getAllRequestedBookings,
 };

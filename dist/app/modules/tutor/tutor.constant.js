@@ -41,4 +41,5 @@ exports.tutorFilterableField = [
     'subject',
     'expertIn',
     'currentStatus',
+    'tutorPreferredClass',
 ];

@@ -131,7 +131,6 @@ const getAllUsers = (filters, paginationOptions) => __awaiter(void 0, void 0, vo
         .skip(skip)
         .limit(limit)
         .select({
-        role: false,
         unseenNotification: false,
     });
     const count = yield user_model_1.default.countDocuments(query);
