@@ -72,5 +72,5 @@ export const tutorFilterableField = [
   'subject',
   'expertIn',
   'currentStatus',
-  'tutorPreferredClass',
+  'preferredClass',
 ];
