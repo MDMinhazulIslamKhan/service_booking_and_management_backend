@@ -18,9 +18,8 @@ router.patch('/change-password', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR
 router.get('/profile', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR), tutor_controller_1.TutorController.ownProfile);
 router.get('/single-tutor/:id', tutor_controller_1.TutorController.getSingleTutorByUser);
 router.get('/all-tutors', tutor_controller_1.TutorController.getAllTutorsByUser);
-router.get('/admin', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.ADMIN_TUTOR, user_1.ENUM_USER_ROLE.SUPER_ADMIN), tutor_controller_1.TutorController.getAllTutorsByAdmin);
-router.get('/admin/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR, // checking purpose
-user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.ADMIN_TUTOR, user_1.ENUM_USER_ROLE.SUPER_ADMIN), tutor_controller_1.TutorController.getSingleTutorByAdmin);
+router.get('/admin', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.ADMIN_USER, user_1.ENUM_USER_ROLE.ADMIN_TUTOR, user_1.ENUM_USER_ROLE.SUPER_ADMIN), tutor_controller_1.TutorController.getAllTutorsByAdmin);
+router.get('/admin/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.ADMIN_TUTOR, user_1.ENUM_USER_ROLE.SUPER_ADMIN), tutor_controller_1.TutorController.getSingleTutorByAdmin);
 router.patch('/accept-request/:userId', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR), tutor_controller_1.TutorController.acceptBookingRequest);
 router.delete('/cancel-request/:userId', (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR), tutor_controller_1.TutorController.cancelBookingRequest);
 router.patch('/profile/:id', (0, validateRequest_1.default)(tutor_validation_1.TutorValidation.updateTutorZodSchema), (0, auth_1.default)(user_1.ENUM_USER_ROLE.TUTOR, user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.SUPER_ADMIN, user_1.ENUM_USER_ROLE.ADMIN_TUTOR), tutor_controller_1.TutorController.updateProfile);
