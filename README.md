@@ -10,7 +10,7 @@
 
 ### **Requerment analysis - [_click here_](https://docs.google.com/document/d/1wmVlihhTgZ1x63fuUGuOHrgZYcqdmyRxRASa8SCU0q0/edit?usp=drive_link)**
 
-### **ER Diagram - [_click here_](https://drive.google.com/file/d/1ILGApNdM7ph1Jx2R3JoIixK92901DQIf/view?usp=drive_link)**
+### **ER Diagram - [_click here_](https://drive.google.com/file/d/1rBo3T1ISZ1SXyn9I647a4376A44O7eM9/view)**
 
 ---
 
@@ -29,8 +29,6 @@
 - Dotenv
 - Http-status
 - ESLint
-- Lint-staged
-- Husky
 
 ---
 
@@ -85,7 +83,7 @@
 
 ## SUPER_ADMIN login info
 
-- phoneNumber : minhaz@gmail.com
+- email : minhaz@gmail.com
 
 - password : 123456
 
