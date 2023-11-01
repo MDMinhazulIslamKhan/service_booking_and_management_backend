@@ -78,7 +78,7 @@ router.patch(
   TutorController.updateProfile,
 );
 
-router.patch(
+router.post(
   '/review/:id',
   validateRequest(TutorValidation.reviewTutorZodSchema),
   auth(
